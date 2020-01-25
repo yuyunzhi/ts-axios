@@ -1,4 +1,4 @@
-import { isObject, isDate } from './util'
+import { isCommonObject, isDate } from './util'
 
 // const obj = {
 //   url: `/a/b`,
@@ -62,7 +62,8 @@ export function buildUrl(url: string, params?: any): string {
     values.forEach(item => {
       if (isDate(item)) {
         item = new Date(item).toISOString()
-      } else if (isObject(item)) {
+      } else if (isCommonObject(item)) {
+        // 这里只判断普通对象 {}
         item = JSON.stringify(item)
       }
       partParams.push(`${encode(key)}=${encode(item)}`)
