@@ -3,7 +3,7 @@ export function isDate(value: any): boolean {
 }
 
 export function isCommonObject(value: any): any {
-  return Object.prototype.toString.call(value) === `[object object]`
+  return Object.prototype.toString.call(value) === `[object Object]`
 }
 
 // export function isObject(value: any): boolean {

@@ -16,9 +16,11 @@ function processAxiosConfig(config: AxiosRequestConfg): AxiosRequestConfg {
   }
   return config
 }
+
 function transformRequestData(config: AxiosRequestConfg): any {
   return transformRequest(config.data)
 }
+
 function transformUrl(config: AxiosRequestConfg): string {
   const { url, params } = config
   return buildUrl(url, params)
