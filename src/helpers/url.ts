@@ -1,31 +1,23 @@
 import { isObject, isDate } from './util'
 
-function hasParams(params: any): boolean {
-  if (JSON.stringify(params) === '{}') {
-    return false
-  } else if (params === undefined || params === null) {
-    return false
-  } else {
-    return true
-  }
-}
-
-function encode(val: string): string {
-  return encodeURIComponent(val)
-    .replace(/%2C/gi, ',')
-    .replace(/%20/g, '+')
-    .replace(/%5B/gi, '[')
-    .replace(/%5D/gi, ']')
-    .replace(/%40/g, '@')
-    .replace(/%3A/gi, ':')
-    .replace(/%24/g, '$')
-}
+// const obj = {
+//   url: `/a/b`,
+//   params: {
+//     foo: ['bar', 'baz'],
+//     date: new Date(),
+//     a: 1,
+//     up: '@:$, ',
+//     baz: null
+//   }
+// }
+//
+// buildUrl(obj.url, obj.params)
 
 /**
- *
  * @param url
  * @param
- * @result：
+ * @return：
+ *  处理的参数拼接结果
  *  params={a:1,b:2} ==>?a=1&b=2
  *  params={foo: ['bar', 'baz']}==> ?foo[]=bar&foo[]=baz
  *  params={foo:{bar:'baz'}} ==> ?foo=%7B%22bar%22:%22baz%22%7D
@@ -41,7 +33,8 @@ export function buildUrl(url: string, params?: any): string {
     return url
   }
 
-  // const resultParams:string[]
+  // 用于存入每个部分的参数
+  let partParams: string[] = []
 
   console.log('obj.keys', Object.keys(params))
 
@@ -53,30 +46,77 @@ export function buildUrl(url: string, params?: any): string {
       return
     }
 
-    let values: string[]
-
-    // 如果是Object，就直接JSON.stringfiy
-    // 如果是Date,需要用toISOString转换
-    // 剩余就直接用encode去转化key 和 value 储存 到parts
-
+    // 初始化一个字符串数组，方便遍历处理
+    let values: string[] = []
     if (Array.isArray(value)) {
       values = value
+      // {foo: ['bar', 'baz']}==> foo[]=bar&foo[]=baz
+      key = key + '[]'
     } else {
       values = [value]
     }
+
+    // 如果类型是Object，就直接JSON.stringify
+    // 如果类型是Date,需要用toISOString转换
+    // 剩余就直接用encode去转化key 和 value 储存 到parts
+    values.forEach(item => {
+      if (isDate(item)) {
+        item = new Date(item).toISOString()
+      } else if (isObject(item)) {
+        item = JSON.stringify(item)
+      }
+      partParams.push(`${encode(key)}=${encode(item)}`)
+    })
+
+    let serializedParams: string = partParams.join('&')
+
+    if (serializedParams) {
+      url = serializedUrl(url, serializedParams)
+    }
   })
+  console.log('完整URL是啥：', url)
   return url
 }
 
-const obj = {
-  url: `/a/b`,
-  params: {
-    foo: ['bar', 'baz'],
-    date: new Date(),
-    a: 1,
-    up: '@:$, ',
-    baz: null
+/**
+ * 把URL 和 参数拼接一起，并且去掉'#后面的参数' 判断是否有'？'
+ * @param url
+ * @param params
+ */
+function serializedUrl(url: string, params: string): string {
+  let index: number = params.indexOf('#')
+  if (index >= 0) {
+    url = url.slice(0, index)
+  }
+  url = url + (url.indexOf('?') > 0 ? '&' : '?') + params
+  return url
+}
+
+/**
+ * 判断用户是否传入了合法的params对象
+ * @param params
+ */
+function hasParams(params: any): boolean {
+  if (JSON.stringify(params) === '{}') {
+    return false
+  } else if (params === undefined || params === null) {
+    return false
+  } else {
+    return true
   }
 }
 
-buildUrl(obj.url, obj.params)
+/**
+ *
+ * @param val
+ */
+function encode(val: string): string {
+  return encodeURIComponent(val)
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']')
+    .replace(/%40/g, '@')
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+}
