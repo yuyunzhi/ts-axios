@@ -1,6 +1,7 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from './types'
 import { parseStringTypeHeaders } from './helpers/hanldeHeader'
 import { transformResponseData } from './helpers/handleData'
+import { createAxiosError } from './helpers/handleError'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -20,12 +21,14 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     // 服务端或者网络超时错误，由前端自己设定
     request.ontimeout = function handleTimeout() {
-      reject(new Error(`Timeout of ${timeout} ms exceeded / 网络超时超过 ${timeout} ms`))
+      // message,config,response,request,code
+      reject(createAxiosError(` 网络超时超过 ${timeout} ms`, config, null, request, null))
     }
 
     // 网络不好的错误
     request.onerror = function handleError() {
-      reject(new Error('Network Error / 网络错误'))
+      // message,config,response,request,code
+      reject(createAxiosError(`网络错误`, config, null, request, null))
     }
 
     request.onreadystatechange = function handleResponse() {
@@ -34,26 +37,33 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         return
       }
 
-      const responseHeaders = request.getAllResponseHeaders()
-      const responseData =
-        responseType && responseType !== 'text' ? request.response : request.responseText
+      // const responseHeaders = request.getAllResponseHeaders()
+      // const responseData =
+      //   responseType && responseType !== 'text' ? request.response : request.responseText
+      //
+      // const response: AxiosResponse = {
+      //   data: transformResponseData(responseData),
+      //   status: request.status,
+      //   statusText: request.statusText,
+      //   headers: parseStringTypeHeaders(responseHeaders),
+      //   config,
+      //   request
+      // }
 
-      const response: AxiosResponse = {
-        data: transformResponseData(responseData),
-        status: request.status,
-        statusText: request.statusText,
-        headers: parseStringTypeHeaders(responseHeaders),
-        config,
-        request
-      }
+      const response = getResponseAllData(config, request)
 
       if (request.status >= 200 && request.status < 300) {
         resolve(response)
       } else {
         // 401,404……500……
+        // message,config,response,request,code
         reject(
-          new Error(
-            `Request failed with status code ${response.status} / 请求失败状态码${response.status} `
+          createAxiosError(
+            `请求失败状态码:${response.status}`,
+            config,
+            response,
+            request,
+            response.status
           )
         )
       }
@@ -72,4 +82,21 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     request.send(data)
   })
+}
+
+function getResponseAllData(config: AxiosRequestConfig, request: XMLHttpRequest): AxiosResponse {
+  const { responseType } = config
+  const responseHeaders = request.getAllResponseHeaders()
+  const responseData =
+    responseType && responseType !== 'text' ? request.response : request.responseText
+
+  const response: AxiosResponse = {
+    data: transformResponseData(responseData),
+    status: request.status,
+    statusText: request.statusText,
+    headers: parseStringTypeHeaders(responseHeaders),
+    config,
+    request
+  }
+  return response
 }
