@@ -2,6 +2,7 @@ import { AxiosRequestConfg } from './types'
 import xhr from './xhr'
 import { buildUrl } from './helpers/handleUrl'
 import { transformRequest } from './helpers/handleData'
+import { processHeaders } from './helpers/hanldeHeader'
 
 function axios(config: AxiosRequestConfg) {
   // TODO
@@ -11,10 +12,14 @@ function axios(config: AxiosRequestConfg) {
 
 function processAxiosConfig(config: AxiosRequestConfg): AxiosRequestConfg {
   config.url = transformUrl(config)
-  if (config.data) {
-    config.data = transformRequestData(config)
-  }
+  config.data = transformRequestData(config)
+  config.headers = transformRequestHeaders(config)
   return config
+}
+
+function transformRequestHeaders(config: AxiosRequestConfg): any {
+  const { headers = {}, data } = config
+  return processHeaders(headers, data)
 }
 
 function transformRequestData(config: AxiosRequestConfg): any {
