@@ -1,6 +1,6 @@
-import { AxiosRequestConfg } from './types'
+import { AxiosRequestConfig } from './types'
 
-export default function xhr(config: AxiosRequestConfg) {
+export default function xhr(config: AxiosRequestConfig) {
   // TODO
   let { data = null, url, method = 'get', headers } = config
 

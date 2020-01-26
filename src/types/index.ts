@@ -14,10 +14,19 @@ export type Methods =
   | 'options'
   | ' OPTIONS'
 
-export interface AxiosRequestConfg {
+export interface AxiosRequestConfig {
   url: string
   method?: Methods
   data?: any
   params?: any
   headers?: any
+}
+
+export interface AxiosResponse {
+  data: any
+  status: number
+  statusText: string
+  headers: any
+  config: AxiosRequestConfig
+  request: any
 }
