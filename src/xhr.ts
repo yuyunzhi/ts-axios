@@ -1,22 +1,42 @@
-import { AxiosRequestConfig } from './types'
+import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from './types'
 
-export default function xhr(config: AxiosRequestConfig) {
-  // TODO
-  let { data = null, url, method = 'get', headers } = config
+export default function xhr(config: AxiosRequestConfig): AxiosPromise {
+  return new Promise(resolve => {
+    let { data = null, url, method = 'get', headers, responseType } = config
 
-  const request = new XMLHttpRequest()
+    const request = new XMLHttpRequest()
 
-  request.open(method.toUpperCase(), url, true)
+    request.open(method.toUpperCase(), url, true)
 
-  // 如果data不存在那么不需要设置content-type,故删之
-  const hasData = JSON.stringify(data) !== '{}' && data
-  Object.keys(headers).forEach(key => {
-    if (!hasData && key.toLowerCase() === 'content-type') {
-      delete headers[key]
-    } else {
-      request.setRequestHeader(key, headers[key])
+    request.onreadystatechange = function handleResponse() {
+      if (request.readyState !== 4) {
+        return
+      }
+
+      const responseHeaders = request.getAllResponseHeaders()
+      const responseData =
+        responseType && responseType !== 'text' ? request.response : request.responseText
+      const response: AxiosResponse = {
+        data: responseData,
+        status: request.status,
+        statusText: request.statusText,
+        headers: responseHeaders,
+        config,
+        request
+      }
+      resolve(response)
     }
-  })
 
-  request.send(data)
+    // 如果data不存在那么不需要设置content-type,故删之
+    const hasData = JSON.stringify(data) !== '{}' && data
+    Object.keys(headers).forEach(key => {
+      if (!hasData && key.toLowerCase() === 'content-type') {
+        delete headers[key]
+      } else {
+        request.setRequestHeader(key, headers[key])
+      }
+    })
+
+    request.send(data)
+  })
 }

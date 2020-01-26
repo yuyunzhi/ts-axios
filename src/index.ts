@@ -1,20 +1,24 @@
-import { AxiosRequestConfig } from './types'
+import { AxiosRequestConfig, AxiosPromise } from './types'
 import xhr from './xhr'
 import { buildUrl } from './helpers/handleUrl'
 import { transformRequest } from './helpers/handleData'
 import { processHeaders } from './helpers/hanldeHeader'
 
-function axios(config: AxiosRequestConfig) {
+function axios(config: AxiosRequestConfig): AxiosPromise {
   // 对config的header url data 做处理
   config = processAxiosConfig(config)
   // 处理后数据用xhr发送请求
-  xhr(config)
+  return xhr(config)
 }
 
 function processAxiosConfig(config: AxiosRequestConfig): AxiosRequestConfig {
   config.url = transformUrl(config)
-  config.data = transformRequestData(config)
+  // 注意先headers后data
+  // transformRequestHeaders 需要根据传入的data类型做判断来处理headers
+  // 而transformRequestData 会直接把data 转成JSON.stringfiy 或其他类型
   config.headers = transformRequestHeaders(config)
+  config.data = transformRequestData(config)
+
   return config
 }
 
