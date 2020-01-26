@@ -7,14 +7,16 @@ export default function xhr(config: AxiosRequestConfg) {
   const request = new XMLHttpRequest()
 
   request.open(method.toUpperCase(), url, true)
-  console.log('headers', headers)
+
+  // 如果data不存在那么不需要设置content-type,故删之
+  const hasData = JSON.stringify(data) !== '{}' && data
   Object.keys(headers).forEach(key => {
-    const hasData = JSON.stringify(data) !== '{}' && data
     if (!hasData && key.toLowerCase() === 'content-type') {
       delete headers[key]
     } else {
       request.setRequestHeader(key, headers[key])
     }
   })
+
   request.send(data)
 }

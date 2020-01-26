@@ -5,8 +5,9 @@ import { transformRequest } from './helpers/handleData'
 import { processHeaders } from './helpers/hanldeHeader'
 
 function axios(config: AxiosRequestConfg) {
-  // TODO
+  // 对config的header url data 做处理
   config = processAxiosConfig(config)
+  // 处理后数据用xhr发送请求
   xhr(config)
 }
 

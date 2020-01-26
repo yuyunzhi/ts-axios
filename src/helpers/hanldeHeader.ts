@@ -2,8 +2,8 @@ import { isCommonObject } from './util'
 
 export function processHeaders(headers: any, data: any): any {
   // 需要根据对headers的key Content-Type 做统大驼峰写处理
-
   headers = caseWriteHandle(headers, 'Content-Type')
+
   // 根据data的类型设置默认的headers Content-Type
   if (isCommonObject(data)) {
     if (headers && !headers['Content-Type']) {
