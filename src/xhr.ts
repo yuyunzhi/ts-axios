@@ -19,36 +19,14 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     request.open(method.toUpperCase(), url, true)
 
-    // 服务端或者网络超时错误，由前端自己设定
-    request.ontimeout = function handleTimeout() {
-      // message,config,response,request,code
-      reject(createAxiosError(` 网络超时超过 ${timeout} ms`, config, null, request, null))
-    }
-
-    // 网络不好的错误
-    request.onerror = function handleError() {
-      // message,config,response,request,code
-      reject(createAxiosError(`网络错误`, config, null, request, null))
-    }
+    // 通过request.setRequestHeader设置每一个header
+    setAxiosHeaders(config, request)
 
     request.onreadystatechange = function handleResponse() {
       if (request.readyState !== 4 || request.status === 0) {
         // 说明没有触发结果
         return
       }
-
-      // const responseHeaders = request.getAllResponseHeaders()
-      // const responseData =
-      //   responseType && responseType !== 'text' ? request.response : request.responseText
-      //
-      // const response: AxiosResponse = {
-      //   data: transformResponseData(responseData),
-      //   status: request.status,
-      //   statusText: request.statusText,
-      //   headers: parseStringTypeHeaders(responseHeaders),
-      //   config,
-      //   request
-      // }
 
       const response = getResponseAllData(config, request)
 
@@ -69,21 +47,44 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
     }
 
-    // 如果data不存在那么不需要设置content-type,故删之
-    // 否则通过setRequestHeader 设置每一个header
-    const hasData = JSON.stringify(data) !== '{}' && data
-    Object.keys(headers).forEach(key => {
-      if (!hasData && key.toLowerCase() === 'content-type') {
-        delete headers[key]
-      } else {
-        request.setRequestHeader(key, headers[key])
-      }
-    })
+    // 服务端或者网络超时错误，由前端自己设定timeout大小
+    request.ontimeout = function handleTimeout() {
+      // message,config,response,request,code
+      reject(createAxiosError(` 网络超时超过 ${timeout} ms`, config, null, request, null))
+    }
+
+    // 网络不好的错误
+    request.onerror = function handleError() {
+      // message,config,response,request,code
+      reject(createAxiosError(`网络错误`, config, null, request, null))
+    }
 
     request.send(data)
   })
 }
 
+/**
+ * 设置header，如果header不存在就不处理
+ * @param config
+ * @param request
+ */
+function setAxiosHeaders(config: AxiosRequestConfig, request: XMLHttpRequest): void {
+  let { data = null, headers } = config
+  const hasData = JSON.stringify(data) !== '{}' && data
+  Object.keys(headers).forEach(key => {
+    // data不存在就不需要设置content-type
+    if (!hasData && key.toLowerCase() === 'content-type') {
+      delete headers[key]
+    } else {
+      request.setRequestHeader(key, headers[key])
+    }
+  })
+}
+/**
+ * 拿到所有需要返回的数据，并组装成对象的格式
+ * @param config
+ * @param request
+ */
 function getResponseAllData(config: AxiosRequestConfig, request: XMLHttpRequest): AxiosResponse {
   const { responseType } = config
   const responseHeaders = request.getAllResponseHeaders()
