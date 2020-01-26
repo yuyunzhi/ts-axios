@@ -1,4 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from './types'
+import { parseStringTypeHeaders } from './helpers/hanldeHeader'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise(resolve => {
@@ -6,14 +7,19 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
 
     const request = new XMLHttpRequest()
 
+    if (responseType) {
+      request.responseType = responseType
+    }
+
     request.open(method.toUpperCase(), url, true)
 
     request.onreadystatechange = function handleResponse() {
       if (request.readyState !== 4) {
+        // 说明没有触发结果
         return
       }
 
-      const responseHeaders = request.getAllResponseHeaders()
+      const responseHeaders = parseStringTypeHeaders(request.getAllResponseHeaders())
       const responseData =
         responseType && responseType !== 'text' ? request.response : request.responseText
       const response: AxiosResponse = {
@@ -28,6 +34,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     // 如果data不存在那么不需要设置content-type,故删之
+    // 否则通过setRequestHeader 设置每一个header
     const hasData = JSON.stringify(data) !== '{}' && data
     Object.keys(headers).forEach(key => {
       if (!hasData && key.toLowerCase() === 'content-type') {
