@@ -34,5 +34,9 @@ axios({
 }).then((res) => {
   console.log('第4个用例then+timeout2000',res)
 }).catch((e) => {
-  console.log('第4个用例catch+timeout2000',e,e.message)
+  console.log('第4个用例catch+message',e.message)
+  console.log('第4个用例catch+response',e.response)
+  console.log('第4个用例catch+request',e.request)
+  console.log('第4个用例catch+code',e.code)
+  console.log('第4个用例catch+config',e.config)
 })
