@@ -1,7 +1,6 @@
-// 给外部 example 使用
+// 给example使用的
+export * from './types'
 
 import axios from './index'
-
-export * from './types'
 
 export default axios

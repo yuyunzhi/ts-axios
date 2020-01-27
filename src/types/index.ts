@@ -1,4 +1,4 @@
-export type Methods =
+export type requestMethods =
   | 'get'
   | 'GET'
   | 'delete'
@@ -15,8 +15,8 @@ export type Methods =
   | ' OPTIONS'
 
 export interface AxiosRequestConfig {
-  url: string
-  method?: Methods
+  url?: string
+  method?: requestMethods
   data?: any
   params?: any
   headers?: any
@@ -41,4 +41,26 @@ export interface AxiosError extends Error {
   code?: number | null
   request?: any
   isError: boolean
+}
+
+export interface Axios {
+  request(config: AxiosRequestConfig): AxiosPromise
+
+  get(url: string, config?: AxiosRequestConfig): AxiosPromise
+
+  delete(url: string, config?: AxiosRequestConfig): AxiosPromise
+
+  head(url: string, config?: AxiosRequestConfig): AxiosPromise
+
+  options(url: string, config?: AxiosRequestConfig): AxiosPromise
+
+  post(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise
+
+  put(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise
+
+  patch(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise
+}
+
+export interface AxiosInstance extends Axios {
+  (config: AxiosRequestConfig): AxiosPromise
 }

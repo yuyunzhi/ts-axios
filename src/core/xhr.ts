@@ -1,7 +1,7 @@
-import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from './types'
-import { parseStringTypeHeaders } from './helpers/hanldeHeader'
-import { transformResponseData } from './helpers/handleData'
-import { createAxiosError } from './helpers/handleError'
+import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../types'
+import { parseStringTypeHeaders } from '../helpers/hanldeHeader'
+import { transformResponseData } from '../helpers/handleData'
+import { createAxiosError } from '../helpers/handleError'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       request.timeout = timeout
     }
 
-    request.open(method.toUpperCase(), url, true)
+    request.open(method.toUpperCase(), url!, true)
 
     // 通过request.setRequestHeader设置每一个header
     setAxiosHeaders(config, request)
