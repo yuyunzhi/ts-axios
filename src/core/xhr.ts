@@ -3,9 +3,9 @@ import { parseStringTypeHeaders } from '../helpers/hanldeHeader'
 import { transformResponseData } from '../helpers/handleData'
 import { createAxiosError } from '../helpers/handleError'
 
-export default function xhr(config: AxiosRequestConfig): AxiosPromise {
+export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
   return new Promise((resolve, reject) => {
-    let { data = null, url, method = 'get', headers, responseType, timeout } = config
+    let { data = null, url, method = 'get', responseType, timeout } = config
 
     const request = new XMLHttpRequest()
 

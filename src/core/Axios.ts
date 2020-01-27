@@ -2,7 +2,7 @@ import dispatchRequest from './dispatchRequest'
 import { AxiosRequestConfig, AxiosPromise, requestMethods } from '../types'
 
 export default class Axios {
-  request(url: any, config?: any): AxiosPromise {
+  request<T>(url: any, config?: any): AxiosPromise<T> {
     if (typeof url === 'string') {
       // 走的是第二个重载函数
       Object.assign(config || {}, { url })
@@ -13,48 +13,48 @@ export default class Axios {
     return dispatchRequest(config)
   }
 
-  get(url: string, config?: AxiosRequestConfig): AxiosPromise {
+  get<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthoutData(url, 'get', config)
   }
 
-  delete(url: string, config?: AxiosRequestConfig): AxiosPromise {
+  delete<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthoutData(url, 'delete', config)
   }
 
-  head(url: string, config?: AxiosRequestConfig): AxiosPromise {
+  head<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthoutData(url, 'head', config)
   }
 
-  options(url: string, config?: AxiosRequestConfig): AxiosPromise {
+  options<T>(url: string, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthoutData(url, 'options', config)
   }
 
-  post(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
+  post<T>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthData(url, 'post', data, config)
   }
 
-  put(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
+  put<T>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T> {
     return this.sendRequestWidthData(url, 'put', data, config)
   }
 
-  patch(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise {
-    return this.sendRequestWidthData(url, 'patch', data, config)
+  patch<T>(url: string, data?: any, config?: AxiosRequestConfig): AxiosPromise<T> {
+    return this.sendRequestWidthData<T>(url, 'patch', data, config)
   }
 
-  sendRequestWidthData(
+  sendRequestWidthData<T>(
     url: string,
     method: requestMethods,
     data?: any,
     config?: AxiosRequestConfig
-  ): AxiosPromise {
-    return this.request(Object.assign(config || {}, { url, method, data }))
+  ): AxiosPromise<T> {
+    return this.request<T>(Object.assign(config || {}, { url, method, data }))
   }
 
-  sendRequestWidthoutData(
+  sendRequestWidthoutData<T>(
     url: string,
     method: requestMethods,
     config?: AxiosRequestConfig
-  ): AxiosPromise {
-    return this.request(Object.assign(config || {}, { url, method }))
+  ): AxiosPromise<T> {
+    return this.request<T>(Object.assign(config || {}, { url, method }))
   }
 }

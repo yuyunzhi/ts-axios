@@ -4,7 +4,7 @@ import { buildUrl } from '../helpers/handleUrl'
 import { transformRequest } from '../helpers/handleData'
 import { processHeaders } from '../helpers/hanldeHeader'
 
-export default function dispatchRequest(config: AxiosRequestConfig): AxiosPromise {
+export default function dispatchRequest<T>(config: AxiosRequestConfig): AxiosPromise<T> {
   // 对config的header url data 做处理
   config = processAxiosConfig(config)
   // 处理后数据用xhr发送请求
