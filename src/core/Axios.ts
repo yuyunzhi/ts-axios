@@ -2,7 +2,14 @@ import dispatchRequest from './dispatchRequest'
 import { AxiosRequestConfig, AxiosPromise, requestMethods } from '../types'
 
 export default class Axios {
-  request(config: AxiosRequestConfig): AxiosPromise {
+  request(url: any, config?: any): AxiosPromise {
+    if (typeof url === 'string') {
+      // 走的是第二个重载函数
+      Object.assign(config || {}, { url })
+    } else {
+      // 走的是第一个重载函数
+      config = url
+    }
     return dispatchRequest(config)
   }
 
@@ -40,7 +47,7 @@ export default class Axios {
     data?: any,
     config?: AxiosRequestConfig
   ): AxiosPromise {
-    return dispatchRequest(Object.assign(config || {}, { url, method, data }))
+    return this.request(Object.assign(config || {}, { url, method, data }))
   }
 
   sendRequestWidthoutData(
@@ -48,6 +55,6 @@ export default class Axios {
     method: requestMethods,
     config?: AxiosRequestConfig
   ): AxiosPromise {
-    return dispatchRequest(Object.assign(config || {}, { url, method }))
+    return this.request(Object.assign(config || {}, { url, method }))
   }
 }
