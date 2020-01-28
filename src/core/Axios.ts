@@ -16,7 +16,7 @@ interface Interceptors {
 
 interface PromiseChain {
   resolved: ResolveFn
-  reject?: RejectFn
+  rejected?: RejectFn
 }
 
 export default class Axios {
@@ -38,26 +38,26 @@ export default class Axios {
       config = url
     }
 
-    const chain: Array<PromiseChain> = [
+    const promiseChain: Array<PromiseChain> = [
       {
         resolved: dispatchRequest,
-        reject: undefined
+        rejected: undefined
       }
     ]
 
     this.interceptors.request.forEach(interceptor => {
-      chain.unshift(interceptor)
+      promiseChain.unshift(interceptor)
     })
 
     this.interceptors.response.forEach(interceptor => {
-      chain.push(interceptor)
+      promiseChain.push(interceptor)
     })
 
     let promise = Promise.resolve(config)
 
-    while (chain.length) {
-      const { resolved, reject } = chain.shift()!
-      promise = promise.then(resolved, reject)
+    while (promiseChain.length) {
+      const { resolved, rejected } = promiseChain.shift()!
+      promise = promise.then(resolved, rejected)
     }
 
     return promise
