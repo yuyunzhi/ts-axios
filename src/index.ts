@@ -5,7 +5,7 @@ import { extendAixos } from './helpers/util'
 function createInstance(): AxiosInstance {
   const _this = new Axios()
   console.log('_this', _this)
-  const instance = Axios.prototype.request
+  const instance = Axios.prototype.request.bind(_this)
   extendAixos(instance, _this)
   return instance as AxiosInstance
 }
