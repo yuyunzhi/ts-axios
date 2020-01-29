@@ -1,4 +1,5 @@
-import { isCommonObject } from './util'
+import { deepMerge, isCommonObject } from './util'
+import { requestMethods } from '../types'
 
 export function processHeaders(headers: any, data: any): any {
   // 需要根据对headers的key Content-Type 做统大驼峰写处理
@@ -72,4 +73,19 @@ export function parseStringTypeHeaders(headers: string): any {
   })
 
   return parsed
+}
+
+export function flattenHeaders(headers: any, method: requestMethods): any {
+  if (!headers) {
+    return headers
+  }
+  headers = deepMerge(headers.common || {}, headers[method] || {}, headers)
+
+  const methodsToDelete = ['delete', 'get', 'head', 'options', 'post', 'put', 'patch', 'common']
+
+  methodsToDelete.forEach(method => {
+    delete headers[method]
+  })
+
+  return headers
 }
