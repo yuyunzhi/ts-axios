@@ -25,6 +25,7 @@ export interface AxiosRequestConfig {
   [propName: string]: any
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
+  widthCredentials?: boolean
 }
 
 export interface AxiosTransformer {

@@ -5,7 +5,7 @@ import { createAxiosError } from '../helpers/handleError'
 
 export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
   return new Promise((resolve, reject) => {
-    let { data = null, url, method = 'get', responseType, timeout } = config
+    let { data = null, url, method = 'get', responseType, timeout, withCredentials } = config
 
     const request = new XMLHttpRequest()
 
@@ -15,6 +15,10 @@ export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
 
     if (timeout) {
       request.timeout = timeout
+    }
+
+    if (withCredentials) {
+      request.withCredentials = withCredentials
     }
 
     request.open(method.toUpperCase(), url!, true)
@@ -80,6 +84,7 @@ function setAxiosHeaders(config: AxiosRequestConfig, request: XMLHttpRequest): v
     }
   })
 }
+
 /**
  * 拿到所有需要返回的数据，并组装成对象的格式
  * @param config
