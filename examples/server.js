@@ -26,6 +26,13 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
 
+app.use(express.static(__dirname, {
+  setHeaders (res) {
+    console.log('6666666')
+    res.cookie('XSRF-TOKEN-D', '1234abc')
+  }
+}))
+
 const router = express.Router()
 
 router.get('/simple/get', function(req, res) {
@@ -135,6 +142,15 @@ router.post('/config/post', function(req, res) {
 })
 
 router.get('/more/get', function(req, res) {
+  console.log('6666666')
+  res.cookie("XSRF-TOKEN-D",'1234abc');
+  res.json(req.cookies)
+})
+
+
+router.get('/more/post', function(req, res) {
+  console.log('7777')
+  res.cookie("XSRF-TOKEN-D",'1234abc');
   res.json(req.cookies)
 })
 

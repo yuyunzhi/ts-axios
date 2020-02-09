@@ -12,7 +12,10 @@ import { isCommonObject, isDate } from './util'
 // }
 //
 // buildUrl(obj.url, obj.params)
-
+interface URLOrigin {
+  host: string
+  protocol: string
+}
 /**
  * @param url
  * @param
@@ -120,4 +123,22 @@ function encode(val: string): string {
     .replace(/%40/g, '@')
     .replace(/%3A/gi, ':')
     .replace(/%24/g, '$')
+}
+
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parseOrigin = resolveURL(requestURL)
+  return parseOrigin.protocol === currentOrigin.protocol && parseOrigin.host === currentOrigin.host
+}
+
+const urlParsingNode = document.createElement('a')
+const currentOrigin = resolveURL(window.location.href)
+
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url)
+  const { protocol, host } = urlParsingNode
+  console.log(protocol, host)
+  return {
+    protocol,
+    host
+  }
 }

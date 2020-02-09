@@ -2,10 +2,22 @@ import { AxiosRequestConfig, AxiosResponse, AxiosPromise } from '../types'
 import { parseStringTypeHeaders } from '../helpers/hanldeHeader'
 import { transformResponseData } from '../helpers/handleData'
 import { createAxiosError } from '../helpers/handleError'
+import { isURLSameOrigin } from '../helpers/handleUrl'
+import cookie from '../helpers/handleCookie'
 
 export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
   return new Promise((resolve, reject) => {
-    let { data = null, url, method = 'get', responseType, timeout, withCredentials } = config
+    let {
+      data = null,
+      url,
+      method = 'get',
+      responseType,
+      timeout,
+      withCredentials,
+      xsrfHeaderName,
+      xsrfCookieName,
+      headers
+    } = config
 
     const request = new XMLHttpRequest()
 
@@ -24,7 +36,25 @@ export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
     request.open(method.toUpperCase(), url!, true)
 
     // 通过request.setRequestHeader设置每一个header
-    setAxiosHeaders(config, request)
+
+    Object.keys(headers).forEach(key => {
+      // data不存在就不需要设置content-type
+      if (key.toLowerCase() === 'content-type') {
+        delete headers[key]
+      } else {
+        request.setRequestHeader(key, headers[key])
+      }
+    })
+
+    console.log('isURLSameOrigin', isURLSameOrigin(url!))
+    if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+      const xsrfValue = cookie.read(xsrfCookieName)
+      console.log('xsrfValue', xsrfValue)
+      if (xsrfValue) {
+        headers[xsrfHeaderName!] = xsrfValue
+      }
+    }
+    // setAxiosHeaders(config, request)
 
     request.onreadystatechange = function handleResponse() {
       if (request.readyState !== 4 || request.status === 0) {
@@ -75,14 +105,6 @@ export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
 function setAxiosHeaders(config: AxiosRequestConfig, request: XMLHttpRequest): void {
   let { data = null, headers } = config
   const hasData = JSON.stringify(data) !== '{}' && data
-  Object.keys(headers).forEach(key => {
-    // data不存在就不需要设置content-type
-    if (!hasData && key.toLowerCase() === 'content-type') {
-      delete headers[key]
-    } else {
-      request.setRequestHeader(key, headers[key])
-    }
-  })
 }
 
 /**
