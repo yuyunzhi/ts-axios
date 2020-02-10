@@ -5,6 +5,8 @@ const webpack = require('webpack')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
+const multipart = require('connect-multiparty')
+const path = require('path')
 
 require('./server2')
 const app = express()
@@ -16,6 +18,9 @@ app.use(webpackDevMiddleware(compiler, {
     colors: true,
     chunks: false
   }
+}))
+app.use(multipart({
+  uploadDir: path.resolve(__dirname, 'upload-file')
 }))
 
 app.use(webpackHotMiddleware(compiler))
@@ -154,9 +159,16 @@ router.get('/more/post', function(req, res) {
   res.json(req.cookies)
 })
 
+
+
+router.post('/more/upload', function(req, res) {
+  console.log(req.body, req.files)
+  res.end('upload success!')
+})
+
 app.use(router)
 
-const port = process.env.PORT || 8080
+const port = process.env.PORT || 8085
 module.exports = app.listen(port, () => {
   console.log(`Server listening on http://localhost:${port}, Ctrl+C to stop`)
 })
