@@ -36,6 +36,14 @@ export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
     request.open(method.toUpperCase(), url!, true)
 
     // 通过request.setRequestHeader设置每一个header
+    console.log('isURLSameOrigin', isURLSameOrigin(url!))
+    if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
+      const xsrfValue = cookie.read(xsrfCookieName)
+      console.log('xsrfValue', xsrfValue)
+      if (xsrfValue) {
+        headers[xsrfHeaderName!] = xsrfValue
+      }
+    }
 
     Object.keys(headers).forEach(key => {
       // data不存在就不需要设置content-type
@@ -46,14 +54,6 @@ export default function xhr<T>(config: AxiosRequestConfig): AxiosPromise<T> {
       }
     })
 
-    console.log('isURLSameOrigin', isURLSameOrigin(url!))
-    if ((withCredentials || isURLSameOrigin(url!)) && xsrfCookieName) {
-      const xsrfValue = cookie.read(xsrfCookieName)
-      console.log('xsrfValue', xsrfValue)
-      if (xsrfValue) {
-        headers[xsrfHeaderName!] = xsrfValue
-      }
-    }
     // setAxiosHeaders(config, request)
 
     request.onreadystatechange = function handleResponse() {
