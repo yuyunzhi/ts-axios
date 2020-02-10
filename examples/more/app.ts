@@ -1,8 +1,6 @@
 import axios from '../../src/index'
 import NProgress from 'nprogress'
-// import 'nprogress/nprogress.css'
-// let NProgress  = require('nprogress')
-// 简单配置
+import 'nprogress/nprogress.css'
 
 // document.cookie = 'a=b'
 //
@@ -15,6 +13,9 @@ import NProgress from 'nprogress'
 // }).then(res => {
 //   console.log('true-------',res)
 // })
+
+// --------------------
+
 
 // const instance = axios.create({
 //   xsrfCookieName: 'XSRF-TOKEN-D',
@@ -35,6 +36,9 @@ import NProgress from 'nprogress'
 //   })
 //
 // },5000)
+
+
+// --------------------
 
 const instance = axios.create()
 
