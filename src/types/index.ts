@@ -28,6 +28,8 @@ export interface AxiosRequestConfig {
   widthCredentials?: boolean
   xsrfCookieName?: string
   xsrfHeaderName?: string
+  onDownloadProgress?: (e: ProgressEvent) => void
+  onUploadProgress?: (e: ProgressEvent) => void
 }
 
 export interface AxiosTransformer {
