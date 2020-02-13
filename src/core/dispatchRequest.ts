@@ -3,6 +3,7 @@ import xhr from './xhr'
 import { buildUrl } from '../helpers/handleUrl'
 import { flattenHeaders, processHeaders } from '../helpers/hanldeHeader'
 import transform from './transform'
+import { combineURL, isAbsoluteURL } from '../helpers/util'
 
 export default function dispatchRequest<T>(config: AxiosRequestConfig): AxiosPromise<T> {
   // 对config的header url data 做处理
@@ -34,6 +35,10 @@ function transformRequestHeaders(config: AxiosRequestConfig): any {
 }
 
 function transformUrl(config: AxiosRequestConfig): string {
-  const { url, params } = config
+  // const { url, params } = config
+  let { url, params, paramsSerializer, baseURL } = config
+  if (baseURL && !isAbsoluteURL(url!)) {
+    url = combineURL(baseURL, url)
+  }
   return buildUrl(url!, params)
 }
