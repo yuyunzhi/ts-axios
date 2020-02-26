@@ -4,7 +4,8 @@ import {
   isFormData,
   extendAixos,
   deepMerge,
-  isAbsoluteURL
+  isAbsoluteURL,
+  combineURL
 } from '../../src/helpers/util'
 
 describe('helpers:util', () => {
@@ -38,6 +39,25 @@ describe('helpers:util', () => {
       extendAixos(a, b)
 
       expect(a.foo).toBe(123)
+    })
+
+    test('should extend properties', function() {
+      const a = { foo: 123, bar: 456 }
+      const b = { bar: 789 }
+      const c = extendAixos(a, b)
+
+      expect(c.foo).toBe(123)
+      expect(c.bar).toBe(789)
+    })
+  })
+
+  describe('combineURL', () => {
+    test('should be mutable', () => {
+      const absoluteUrl = 'https://www.baidu.com'
+      const relativeUrl = '/api/xxx'
+
+      expect(combineURL(absoluteUrl)).toBe(absoluteUrl)
+      expect(combineURL(absoluteUrl, relativeUrl)).toBe(absoluteUrl + relativeUrl)
     })
 
     test('should extend properties', function() {
