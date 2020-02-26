@@ -55,21 +55,18 @@ function caseWriteHandle(headers: any, headerName: string): any {
 export function parseStringTypeHeaders(headers: string): any {
   // 创建一个没有原型的对象{}
   let parsed = Object.create(null)
-
   if (!headers) {
     return parsed
   }
 
-  headers.split('\r\n').forEach(item => {
-    let [key, value] = item.split(':')
+  headers.split('\r\n').forEach(line => {
+    let [key, ...vals] = line.split(':')
+    key = key.trim().toLowerCase()
     if (!key) {
       return
     }
-    key = key.toLowerCase().trim()
-    if (value) {
-      value = value.trim()
-    }
-    parsed[key] = value
+    let val = vals.join(':').trim()
+    parsed[key] = val
   })
 
   return parsed
