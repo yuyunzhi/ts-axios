@@ -64,7 +64,7 @@ create(null)
 // create('string') 不允许
 
 let someValue:string = '123456'
-//强制 将string转化为number的两种方式
+// 强制 将string转化为number的两种方式
 // let strLength:number = (<string>someValue).length
 let strLength2:number = (someValue as string).length
 
