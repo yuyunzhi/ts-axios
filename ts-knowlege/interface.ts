@@ -96,3 +96,26 @@ interface StringArray {
 let myArray:StringArray
 myArray = ["a","b"]
 
+
+/**
+ * 接口的继承
+ */
+interface Shape {
+  color:string
+}
+
+interface PenStroke{
+  penWidth:number
+}
+
+interface Square extends Shape,PenStroke{
+  sideLength:number
+}
+
+let squre = {} as Square
+
+squre.color = "blue"
+squre.sideLength = 10
+squre.penWidth = 20
+
+
