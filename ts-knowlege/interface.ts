@@ -62,3 +62,37 @@ let a:number[] = [1,2,3]
 let b:Array<number> = [1,2,3]
 let ro:ReadonlyArray<number> = [2,2,2]
 // a = ro 不允许赋值，因为ro为只读
+
+
+/**
+ * 函数类型
+ */
+interface SearchFunc {
+  (source:string,subString:string):boolean
+}
+
+let mySearch:SearchFunc
+
+mySearch = function (source:string,subString){
+  let result = source.search(subString)
+  return result>-1
+}
+
+mySearch = function (src,sub){
+  let result = src.search(sub)
+  return result>-1
+}
+
+
+/**
+ * 索引签名
+ * 支持数字和字符串签名
+ * 注意数字类型是字符串的子类型
+ */
+interface StringArray {
+  [index:number]:string
+}
+
+let myArray:StringArray
+myArray = ["a","b"]
+
